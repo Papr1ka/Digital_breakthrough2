@@ -286,18 +286,18 @@ def pipeline_get_met(dt, preprocessed_df=None, plot_metrics=True) -> dict:
 
     try:
         metrics['avg_time'] = floor(average_time_diff_per_lesson.iloc[0]) if not pd.isna(average_time_diff_per_lesson.iloc[0]) else 0
-    except ValueError:
+    except Exception as E:
         metrics['avg_time'] = 0
     try:
         metrics['max_time'] = floor(avg_message_length.iloc[0]) if not pd.isna(max_time_diff_per_lesson.iloc[0]) else 0
-    except ValueError:
+    except Exception as E:
         metrics['max_time'] = 0
     
     dt['Длина сообщения'] = dt['Текст сообщения'].apply(lambda x: len(x.split()))
     avg_message_length = dt.groupby('ID урока')['Длина сообщения'].mean()
     try:
         metrics['Длина сообщения'] = floor(avg_message_length.iloc[0]) if not pd.isna(avg_message_length.iloc[0]) else 0
-    except ValueError:
+    except Exception as E:
         metrics['Длина сообщения'] = 0
     
     return metrics

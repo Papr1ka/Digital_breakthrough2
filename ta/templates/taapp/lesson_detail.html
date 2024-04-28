@@ -54,6 +54,12 @@
                   Резюме
                 </a>
               </li>
+              <li>
+                <a href="#table" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+                  Сводка
+                </a>
+              </li>
             </ul>
         </div>
         <div class="d-flex flex-column flex-shrink-3 p-3 text-bg-dark">
@@ -93,7 +99,7 @@
             {% endif %}
             <div>
               {% if metrics %}
-              <table class="table">
+              <table class="table" id="table">
                 <thead>
                   <tr>
                     <th scope="col">Тип</th>

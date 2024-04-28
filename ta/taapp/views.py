@@ -92,6 +92,24 @@ def parse_saiga_text(text):  # Парсинг текста. text - текст, �
         get_part_list(r'\d+\.\s(.*?\.)(?=\n\d+\.|\Z)', text)
     )
 
+@dataclass
+class Final:
+    a: str
+    b: str
+    c: str
+
+def parse_final_text(text):  # Парсер для генерации описаний (второй сайги)
+  quality_pattern = r"Оценка качества преподавания: ([^\n]+)"
+  quality_match = re.search(quality_pattern, text)
+  quality_score = quality_match.group(1) if quality_match else "Не найдено"
+
+  metricpattern = r"Важные оценочные метрики:\n(.*?)(?=\n\n)"
+  metrics = re.search(metricpattern, text, re.DOTALL).group(1).split("\n")
+
+  summary_pattern = r"Резюме: ([^\n]+)"
+  summary_match = re.search(summary_pattern, text)
+  summary = summary_match.group(1) if summary_match else "Не найдено"
+  return Final(quality_score, metrics, summary)
 
 class HomeView(View):
     template_name = "taapp/home.html"
