@@ -87,7 +87,7 @@ def regressor(lid):
     df = gen_df(lid, bert1=True, bert2=True)
     df = preprocess_(df)
     score = predict_regressor(df, lesson.long_description)
-    lesson.score = score
+    lesson.score = round(score, 2)
     lesson.save()
     return True
 
@@ -103,5 +103,6 @@ def saiga2(lid):
     if out.startswith("assistant"):
         out = out.replace("assistant", "").strip()
     lesson.long_description2 = out
+    lesson.handled_saiga2 = True
     lesson.save()
     return True

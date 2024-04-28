@@ -284,17 +284,26 @@ def pipeline_get_met(dt, preprocessed_df=None, plot_metrics=True) -> dict:
     max_time_diff_per_lesson.name = "max_time"
     
 
-    metrics['avg_time'] = floor(average_time_diff_per_lesson.iloc[0])
-    metrics['max_time'] = floor(max_time_diff_per_lesson.iloc[0])
+    try:
+        metrics['avg_time'] = floor(average_time_diff_per_lesson.iloc[0]) if not pd.isna(average_time_diff_per_lesson.iloc[0]) else 0
+    except ValueError:
+        metrics['avg_time'] = 0
+    try:
+        metrics['max_time'] = floor(avg_message_length.iloc[0]) if not pd.isna(max_time_diff_per_lesson.iloc[0]) else 0
+    except ValueError:
+        metrics['max_time'] = 0
     
     dt['Длина сообщения'] = dt['Текст сообщения'].apply(lambda x: len(x.split()))
     avg_message_length = dt.groupby('ID урока')['Длина сообщения'].mean()
-    metrics['Длина сообщения'] = floor(avg_message_length.iloc[0])
+    try:
+        metrics['Длина сообщения'] = floor(avg_message_length.iloc[0]) if not pd.isna(avg_message_length.iloc[0]) else 0
+    except ValueError:
+        metrics['Длина сообщения'] = 0
     
     return metrics
 
 
-def compute_metrics(data, saiga_text):  # Подсчет метрик для одного урока
+def cm(data, saiga_text):  # Подсчет метрик для одного урока
     # data - df из всех сообщений одного урока + ['Текст от Сайги'], ['Тэги на тэги'], ['Тэги на эмоции']
     
     def SMA(arr):
@@ -371,7 +380,7 @@ def compute_metrics(data, saiga_text):  # Подсчет метрик для о�
 
         return counter.most_common(1)[0][0]
 
-    df_inp['Преобладающий тэг'] = tags_id_to_str.get(most_rag(tags))
+    df_inp['Преобладающий тег'] = tags_id_to_str.get(most_rag(tags))
 
     def check_susp(tags):
         arr = SMA(tags)
@@ -407,10 +416,11 @@ def compute_metrics(data, saiga_text):  # Подсчет метрик для о�
     for k, v in mes_metrics.items():
         df_inp[k] = v
 
-    return df_inp.to_frame()
+    return df_inp
 
 def predict_regressor(df_inp, saiga_text):  # Получение оценки
-    computed_metrics = compute_metrics(df_inp, saiga_text)
+    computed_metrics = cm(df_inp, saiga_text).fillna(0)
+    computed_metrics = computed_metrics.drop(['Выявленная проблема'])
     print(computed_metrics)
     return regressor_model.predict(computed_metrics)
 

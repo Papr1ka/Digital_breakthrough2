@@ -6,7 +6,7 @@ from .models import Lesson, Message
 import pandas as pd
 from random import randint
 from dataclasses import dataclass
-from .charts import plot1, gen_df, message_density_and_questions_graph, domain_graph, find_swears, pipeline_get_met, gen_df, preprocess_, message_density_and_tech_issues_graph
+from .charts import plot1, gen_df, message_density_and_questions_graph, domain_graph, find_swears, pipeline_get_met, gen_df, preprocess_, message_density_and_tech_issues_graph, pie
 from django.core.paginator import Paginator
 from .forms import DatasetForm
 from .tasks import handle_file
@@ -181,6 +181,8 @@ class LessonDetailView(View):
         
         if obj.handled:
             print("handled")
+        else:
+            ctx.update(script_required=True)
         
         if obj.handled_bert:
             df = gen_df(lid, bert1=True, bert2=True)
@@ -190,6 +192,14 @@ class LessonDetailView(View):
                 g,
                 'tech'
             ))
+        if obj.handled_bert_emo:
+            df = gen_df(lid, bert1=True, bert2=True)
+            df = preprocess_(df)
+            g = pie(lid, df)
+            plots.append(Plot(
+                g,
+                'emo'
+            ))
 
         if not obj.handled and processing.get(lid) is None:
             print("starting processing...")
@@ -197,14 +207,17 @@ class LessonDetailView(View):
             if not obj.handled_bert:
                 r = predict_text_prod.delay(lid)
                 task_ids.append(r)
-            if not obj.handled_saiga:
-                r2 = saiga.delay(lid)
-                task_ids.append(r2)
             if not obj.handled_bert_emo:
                 r3 = predict_text_prod2.delay(lid)
                 task_ids.append(r3)
+            if not obj.handled_saiga:
+                r2 = saiga.delay(lid)
+                task_ids.append(r2)
             if obj.handled_bert and obj.handled_bert_emo and obj.handled_saiga:
                 # Разкоментить, когда регрессор будет готов
+                if not obj.score:
+                    r5 = regressor.delay(lid)
+                    task_ids.append(r5)
                 
                 if not obj.handled_saiga2:
                     r4 = saiga2.delay(lid)

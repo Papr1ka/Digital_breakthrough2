@@ -315,7 +315,7 @@ def count_tech_issues_per_interval(df, interval='5min'):
 
     all_intervals_df = pd.concat(all_intervals)
 
-    count_by_interval = df_copy.loc[df_copy['Тэги на тэги'] == "'технические неполадки'"].groupby(['ID урока', 'interval_start']).size().reset_index(name='count')
+    count_by_interval = df_copy.loc[df_copy['Тэги на тэги'] == "технические неполадки"].groupby(['ID урока', 'interval_start']).size().reset_index(name='count')
     result_df = all_intervals_df.merge(count_by_interval, on=['ID урока', 'interval_start'], how='left')
     result_df['count'] = result_df['count'].fillna(0)
 
@@ -337,6 +337,18 @@ def message_density_and_tech_issues_graph(lid, df):
     fig.update_yaxes(title_text="Количество сообщений")
     fig.update_layout(title=f'График технических неполадок урока ID{lid}')
 
+    plt = plot(fig, output_type="div")
+    context = {'plot_div': plt}
+    return context
+
+colors = {"нейтральное": 'lightgray', "негативное": 'red', "позитивное": 'green'}
+
+def pie(lid, lesson_df):
+    fig = go.Figure(data=[go.Pie(labels=lesson_df['Тэги на эмоции'].unique(),
+                                values=lesson_df['Тэги на эмоции'].value_counts(),
+                                marker_colors=[colors[label] for label in lesson_df['Тэги на эмоции'].unique()])])
+
+    fig.update_layout(title=f'Распределение настроений урока ID {lid}')
     plt = plot(fig, output_type="div")
     context = {'plot_div': plt}
     return context
