@@ -1,0 +1,89 @@
+{% extends "taapp/index.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+{% comment %} <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1>Поиск музейных предметов</h1>
+            <p class="lead text-body-secondary">Загрузите изображение и найдите похожие предметы!</p>
+        </div>
+    </div>
+</section> {% endcomment %}
+
+<div class="album py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <h4 class="mb-3">Загрузите датасет в формате .xlsx</h4>
+                <form class="needs-validation form-inline" action="{% url 'load' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div>
+                            {{ form.dataset }}
+                        </div>
+                        <div>
+                            {% if form.image.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.image.errors }}
+                            </div>
+                            {% endif %}
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <button class="btn btn-secondary" name="action" value="all" type="submit">Отправить</button>
+                    </div>
+                </form>
+                <h3>Статус задачи: <span id="task_status" class="badge text-bg-secondary">New</span></h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if script_required %}
+<script
+      src="https://code.jquery.com/jquery-3.6.4.min.js"
+      integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+      crossorigin="anonymous">
+</script>
+<script>
+    var i = 0;
+    function updateResult()
+    {
+        heading = document.getElementById("task_status")
+        $.ajax({
+            url: "{{ task_url }}",
+            type: "GET",
+            dataType: "json",
+            success: (jsonResponse) => {
+                console.log(jsonResponse);
+                var ready = jsonResponse.ready
+                if (ready == false)
+                {
+                    heading.textContent = ("В обработке" + ".".repeat(i))
+                    i = (i + 1) % 4
+                    setTimeout(updateResult, 1000)
+                }
+                else
+                {
+                    heading.textContent = "Завершена."
+                    console.log("ended")
+                }
+            },
+            error: () => {
+                setTimeout(updateResult, 1000)
+            }
+        })
+    }
+
+    $(document).ready(function() {
+        updateResult()
+    })
+</script>
+{% endif %}
+{% endblock content %}

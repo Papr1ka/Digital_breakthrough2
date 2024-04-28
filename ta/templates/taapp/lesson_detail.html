@@ -1,0 +1,160 @@
+{% extends 'taapp/index.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block links %}
+{% endblock links %}
+
+{% block content %}
+
+
+<div class="container">
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+              <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+              <span class="fs-4">Урок {{ object }}</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a href="#" class="nav-link active text-white" aria-current="page">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+                  Обзор
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#messages_chart" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                  График сообщений
+                </a>
+              </li>
+              <li>
+                <a href="#links_chart" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+                  Ссылки
+                </a>
+              </li>
+              <li>
+                <a href="#description" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+                  Описание
+                </a>
+              </li>
+              <li>
+                <a href="#description2" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+                  Резюме
+                </a>
+              </li>
+            </ul>
+        </div>
+        <div class="d-flex flex-column flex-shrink-3 p-3 text-bg-dark">
+            {% if score %}
+            <div class="container mt-3">
+              <h1>Общая оценка {{ score }}</h1>
+            </div>
+            {% endif %}
+            {% for chart in charts %}
+                <div id="{{ chart.plot_id }}" class="container mt-3">
+                  {% include "taapp/inline/chart.html" with object=chart.plot %}
+                </div>
+            {% endfor %}
+
+            {% if description %}
+              <div class="container mt-3" id="description">
+                {% include 'taapp/inline/saiga.html' with description=description %}
+              </div>
+            {% endif %}
+            {% if swears %}
+            <div class="container mt-3" id="description">
+              <dl>
+                <dt>Маты</dt>
+                <dt>
+                  <ul>
+                    {% for m in swears %}
+                      <li>{{ m }}</li>
+                    {% endfor %}
+                  </ul>
+                </dt>
+            </div>
+            {% endif %}
+            {% if description2 %}
+            <div class="container mt-3" id="description2">
+              <p>{{ description2 }}</p>
+            <div>
+            {% endif %}
+            <div>
+              {% if metrics %}
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Значение</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for metric in metrics %}
+                  <tr>
+                    <th scope="row">{{metric.name}}</th>
+                    <td>{{metric.value}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+<script
+      src="https://code.jquery.com/jquery-3.6.4.min.js"
+      integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+      crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+  $(".nav .nav-link").on("click", function(){
+    $(".nav").find(".active").removeClass("active");
+    $(this).addClass("active");
+ });
+  </script>
+{% if script_required %}
+<script>
+    var i = 0;
+    function updateResult()
+    {
+        $.ajax({
+            url: "{{ ready_url }}",
+            type: "GET",
+            dataType: "json",
+            success: (jsonResponse) => {
+                console.log(jsonResponse);
+                var ready = jsonResponse.response
+                if (ready == 2)
+                {
+                  ready = 0
+                  location.reload()
+                }
+                else if (ready == 1)
+                {
+                  ready = 0
+                  location.reload()
+                }
+                else if (ready != -1)
+                {
+                  setTimeout(updateResult, 1000)
+                }
+            },
+            error: () => {
+                setTimeout(updateResult, 1000)
+            }
+        })
+    }
+
+    $(document).ready(function() {
+        updateResult()
+    })
+</script>
+{% endif %}
+{% endblock content %}

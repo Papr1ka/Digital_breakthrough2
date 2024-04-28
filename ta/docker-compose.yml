@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=hackaton
+      - POSTGRES_USER=hackaton
+      - POSTGRES_PASSWORD=hackaton
+    ports:
+      - "127.0.0.1:5432:5432"
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  # django:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   command: python manage.py runserver
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   volumes:
+  #     - ../weights:/usr/src/data
+  #   environment:
+  #     - DATA=/usr/src/data
+  #   ports:
+  #     - 8000:8000
+  #   network_mode: host
+  # web:
+  #   build: .
+  #   command: python manage.py runserver 0.0.0.0:8000
+  #   volumes:
+  #     - .:/code
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - POSTGRES_NAME=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   depends_on:
+  #     - db

@@ -1,0 +1,77 @@
+{% extends 'taapp/index.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<section class="py-5 text-center container">
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1>Анализ качества преподавания</h1>
+      <p class="lead text-body-secondary">Загрузите изображение и найдите похожие предметы!</p>
+      <form class="input-group mb-3 mt-5" action="{% url 'home' %}">
+        <input type="text" name="lid" class="form-control" placeholder="ID урока" aria-label="ID урока"
+          aria-describedby="button-addon2">
+        <button class="btn btn-outline-primary" type="submit" id="button-addon2">Найти</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    {% for object in page_obj %}
+      <div class="col">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Урок {{ object.id }}</h5>
+            <span class="badge text-bg-secondary">Сообщений: {{ object.messages }}</span>
+
+            {% if object.score %}
+            <span class="badge text-bg-primary">Общая оценка: {{ object.score }}</span>
+            {% endif %}
+            <ul>
+            {% if object.description %}
+              {% include 'taapp/inline/saiga.html' with description=object.description %}
+            {% endif %}
+            </ul>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a href="{{ object.url }}" class="btn btn-sm btn-primary">Смотреть детально</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+  <nav aria-label="Page navigation example" class="mt-3">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" tabindex="-1" aria-disabled="true">Первая</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Предыдущая</a>
+      </li>
+      {% endif %}
+
+      <li class="page-item active"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}" tabindex="-1" aria-disabled="true">Следуюшая</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" tabindex="-1" aria-disabled="true">Последняя</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+</div>
+
+{% endblock content %}

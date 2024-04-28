@@ -1,0 +1,10 @@
+torch
+transformers
+transformers
+redis
+celery
+django
+psycopg2_binary
+plotly
+pandas
+django_celery_results

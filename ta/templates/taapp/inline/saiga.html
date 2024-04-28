@@ -1,0 +1,18 @@
+<dl>
+    <dt>Ученики отвлекались</dt>
+    <dd>{{ description.distructing }}</dd>
+    <dt>Использование терминов</dt>
+    <dd>{{ description.termins }}</dd>
+    <dt>Понимание</dt>
+    <dd>{{ description.undertanding }}</dd>
+    <dt>Главная тема</dt>
+    <dd>{{ description.discussions }}</dd>
+    <dt>Проблемы</dt>
+    <dd>
+      <ul>
+      {% for problem in description.problems %}
+        <li>{{ problem }}</li>
+      {% endfor %}
+      </ul>
+    </dd>
+  </dl>
