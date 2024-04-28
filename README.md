@@ -38,7 +38,7 @@
 
 ### Скринкаст
 
-<video src="./video.mp4" width="320" height="240" controls></video>
+<video src="[./video.mp4](https://drive.google.com/file/d/1QWln0DK6F2mlJxFKdId_gl2HoKp5wTHM/view?usp=drive_link)" width="320" height="240" controls></video>
 
 ## Уникальность нашего решения
 
