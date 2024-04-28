@@ -64,8 +64,14 @@ https://user-images.githubusercontent.com/90902903/228607226-3bc7b186-2f16-4609-
 1. `cd ta && docker compose up`
 2. `python -m pip install -r requirements.txt`
 3. `cd ta && python manage.py makemigrations && python manage.py migrate`
-4. `python manage.py runserver`
-5. `celery -A taapp.celery worker -P solo -l info`
+4. Установите DATA переменную окружения равной пути к папке, содержащей файлы:
+- best_mode_happy.bin
+- best_model_state.bin
+- Complete Russion badwords dictionary
+- final
+- model-q4_K.gguf
+5. `python manage.py runserver`
+6. `celery -A taapp.celery worker -P solo -l info`
 
 ## Интерфейс
 
