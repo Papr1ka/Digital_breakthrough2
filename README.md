@@ -1,8 +1,4 @@
 # <p align="center"> Анализ качества преподавания </p>
-<p align="center">
-<img width="608" alt="image" src="https://user-images.githubusercontent.com/90902903/228295757-1f515d8e-3245-46f8-943c-e9ae0cbdd65b.png">
-</p>
-
 
 Состав команды "Альянс Щёлково и Раменки"   
 *   Павлов Кирилл (https://github.com/Papr1ka) - Backend, Frontend, DevOps     
