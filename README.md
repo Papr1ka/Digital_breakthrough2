@@ -38,7 +38,7 @@
 
 ### Скринкаст
 
-<video src="video.mp4" width="320" height="240" controls></video>
+<video controls src="https://github.com/Papr1ka/Digital_breakthrough2/blob/main/video.mp4" title="video.mp4"></video>
 
 ## Уникальность нашего решения
 
