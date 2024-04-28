@@ -294,3 +294,49 @@ def pipeline_get_met(lid, preprocessed_df=None, plot_metrics=True) -> dict:
         
         
     return None
+
+def count_tech_issues_per_interval(df, interval='5min'):
+    df_copy = df.copy()
+    df_copy.loc[:, 'Дата сообщения_x'] = pd.to_datetime(df_copy['Дата сообщения_x'])
+    df_copy.loc[:, 'interval_start'] = df_copy['Дата сообщения_x'].dt.floor('-' + interval)
+
+    unique_lesson_ids = df_copy['ID урока'].unique()
+
+    all_intervals = []
+    for lesson_id in unique_lesson_ids:
+        lesson_df = df_copy[df_copy['ID урока'] == lesson_id]
+        min_time = lesson_df['interval_start'].min()
+        max_time = lesson_df['interval_start'].max()
+        intervals_df = pd.DataFrame({
+            'interval_start': pd.date_range(min_time, max_time, freq=interval)
+        })
+        intervals_df['ID урока'] = lesson_id
+        all_intervals.append(intervals_df)
+
+    all_intervals_df = pd.concat(all_intervals)
+
+    count_by_interval = df_copy.loc[df_copy['Тэги на тэги'] == "'технические неполадки'"].groupby(['ID урока', 'interval_start']).size().reset_index(name='count')
+    result_df = all_intervals_df.merge(count_by_interval, on=['ID урока', 'interval_start'], how='left')
+    result_df['count'] = result_df['count'].fillna(0)
+
+    return result_df
+
+
+def message_density_and_tech_issues_graph(lid, df):
+
+    count_by_interval_lesson = count_tech_issues_per_interval(df, interval='5min')
+
+    if len(count_by_interval_lesson) == 1:
+        interval_start = count_by_interval_lesson.iloc[0]['interval_start']
+        fig = go.Figure(data=go.Scatter(x=[interval_start], y=[1], mode='markers'))
+    else:
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=count_by_interval_lesson['interval_start'], y=count_by_interval_lesson['count'], mode='lines', name='Технические неполадки'))
+
+    fig.update_xaxes(title_text="Время", tickformat='%H:%M')
+    fig.update_yaxes(title_text="Количество сообщений")
+    fig.update_layout(title=f'График технических неполадок урока ID{lid}')
+
+    plt = plot(fig, output_type="div")
+    context = {'plot_div': plt}
+    return context

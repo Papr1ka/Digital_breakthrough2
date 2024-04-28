@@ -6,7 +6,7 @@ from .models import Lesson, Message
 import pandas as pd
 from random import randint
 from dataclasses import dataclass
-from .charts import plot1, gen_df, message_density_and_questions_graph, domain_graph, find_swears, pipeline_get_met, gen_df, preprocess_
+from .charts import plot1, gen_df, message_density_and_questions_graph, domain_graph, find_swears, pipeline_get_met, gen_df, preprocess_, message_density_and_tech_issues_graph
 from django.core.paginator import Paginator
 from .forms import DatasetForm
 from .tasks import handle_file
@@ -181,7 +181,15 @@ class LessonDetailView(View):
         
         if obj.handled:
             print("handled")
-
+        
+        if obj.handled_bert:
+            df = gen_df(lid, bert1=True, bert2=True)
+            df = preprocess_(df)
+            g = message_density_and_tech_issues_graph(lid, df)
+            plots.append(Plot(
+                g,
+                'tech'
+            ))
 
         if not obj.handled and processing.get(lid) is None:
             print("starting processing...")
